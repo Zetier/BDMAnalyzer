@@ -1,4 +1,4 @@
-![Build](https://github.com/github/docs/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/Zetier/BDMAnalyzer/actions/workflows/build.yml/badge.svg)
 
 # MPC(5/8)xx BDM Analyzer
 
