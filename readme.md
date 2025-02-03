@@ -1,3 +1,5 @@
+![Build](https://github.com/github/docs/actions/workflows/build.yml/badge.svg)
+
 # MPC(5/8)xx BDM Analyzer
 
 The BDM used by the MPC8x0 PPC processors do not abide by the BDM standard. The purpose of this Analyzer is to extract bitstreams
