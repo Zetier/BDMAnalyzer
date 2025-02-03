@@ -24,6 +24,7 @@ class BDMAnalyzerSettings : public AnalyzerSettings
     Channel mVFLS0Channel;
     Channel mVFLS1Channel;
     U32 mBitRate;
+    U32 mSampleTolerance;
 
   protected:
     AnalyzerSettingInterfaceChannel mDSDIChannelInterface;
@@ -34,6 +35,7 @@ class BDMAnalyzerSettings : public AnalyzerSettings
     AnalyzerSettingInterfaceChannel mVFLS0ChannelInterface;
     AnalyzerSettingInterfaceChannel mVFLS1ChannelInterface;
     AnalyzerSettingInterfaceInteger mBitRateInterface;
+    AnalyzerSettingInterfaceInteger mSampleToleranceInterface;
 };
 
 #endif // BDM_ANALYZER_SETTINGS

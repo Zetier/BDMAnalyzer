@@ -34,6 +34,19 @@ void BDMAnalyzer::SyncChannels( U64 sampleNum )
     mVLFS1->AdvanceToAbsPosition( sampleNum );
 }
 
+/*
+ * Ensure current bitstate is valid within tolerance
+ * returns False if there is a transition within tolerance
+ * returns True if there is no transition
+ */
+bool BDMAnalyzer::ToleranceCheck( AnalyzerChannelData* channel )
+{
+    // here we're checking within tolerance and +1 to ensure we don't pick up a single sample glich
+    return (
+        !channel->WouldAdvancingCauseTransition( mSettings.mSampleTolerance )           // if it transitions within tolerance
+        && !channel->WouldAdvancingCauseTransition( mSettings.mSampleTolerance + 2 ) ); // and it doesn't transition back in the next sample
+}
+
 void BDMAnalyzer::CollectPackets()
 {
     U8 mode_control = 0;
@@ -47,12 +60,42 @@ void BDMAnalyzer::CollectPackets()
 
         for( U32 i = 0; i < 3; i++ )
         {
-            mode_control = ( mode_control << 1 ) | mDSDI->GetBitState();
-            status = ( status << 1 ) | mDSDO->GetBitState();
+            // if we detect a change within our tolerance, we'll assign to that changed state
+            //  ie, if we see DSDI changes in one sample from where we're currently sampling,
+            //	and DSDI is low, the next sample will have DSDI high. We'll use that
+            if( this->ToleranceCheck( mDSDI ) )
+            {
+                mode_control = ( mode_control << 1 ) | mDSDI->GetBitState();
+            }
+            else
+            {
+                mode_control = ( mode_control << 1 ) | !mDSDI->GetBitState();
+            }
+
+            if( this->ToleranceCheck( mDSDO ) )
+            {
+                status = ( status << 1 ) | mDSDO->GetBitState();
+            }
+            else
+            {
+                status = ( status << 1 ) | !mDSDO->GetBitState();
+            }
+            // status = (status << 1) | mDSDO->GetBitState();
+            /*
+             * In a case where DSDI transitions high before DSCK falling edge
+             * advance an extra edge to align back with clock.
+             * special case because we enter CollectPackets() via a trigger on DSDI rising edge
+             */
+            if( mDSCK->WouldAdvancingCauseTransition( mSettings.mSampleTolerance ) )
+                mDSCK->AdvanceToNextEdge();
+
             mDSCK->AdvanceToNextEdge();
             mDSCK->AdvanceToNextEdge();
             this->SyncChannels( mDSCK->GetSampleNumber() );
+            mDSDI->Advance( mSettings.mSampleTolerance );
+            mDSDO->Advance( mSettings.mSampleTolerance );
             mResults->AddMarker( mDSDI->GetSampleNumber(), AnalyzerResults::Dot, mSettings.mDSDIChannel );
+            mResults->AddMarker( mDSDO->GetSampleNumber(), AnalyzerResults::Dot, mSettings.mDSDOChannel );
         }
 
         U8 pkt_len = ( ( mode_control & 0x2 ) >> 1 ) ? 7 : 32; // mode bit determines packet length
@@ -65,6 +108,8 @@ void BDMAnalyzer::CollectPackets()
             mDSCK->AdvanceToNextEdge();
             mDSCK->AdvanceToNextEdge();
             this->SyncChannels( mDSCK->GetSampleNumber() );
+            mDSDI->Advance( mSettings.mSampleTolerance );
+            mDSDO->Advance( mSettings.mSampleTolerance );
             mResults->AddMarker( mDSDI->GetSampleNumber(), AnalyzerResults::Dot, mSettings.mDSDIChannel );
             mResults->AddMarker( mDSDO->GetSampleNumber(), AnalyzerResults::Dot, mSettings.mDSDOChannel );
         }
@@ -174,6 +219,7 @@ void BDMAnalyzer::WorkerThread()
             break;
         case CORE_READY:
             mDSDI->AdvanceToNextEdge();
+            mDSDI->Advance( 5 );
             if( mDSDI->GetBitState() == BIT_LOW )
                 mDSDI->AdvanceToNextEdge(); // start bit
             mResults->AddMarker( mDSDI->GetSampleNumber(), AnalyzerResults::Dot, mSettings.mDSDIChannel );

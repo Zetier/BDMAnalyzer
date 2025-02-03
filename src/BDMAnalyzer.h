@@ -19,6 +19,13 @@ enum BDM_State
     PKT_START,
 };
 
+enum To_Check
+{
+    DSDI,
+    DSDO,
+    DSCK,
+};
+
 class ANALYZER_EXPORT BDMAnalyzer : public Analyzer2
 {
   public:
@@ -35,6 +42,7 @@ class ANALYZER_EXPORT BDMAnalyzer : public Analyzer2
     virtual bool NeedsRerun();
     virtual void SyncChannels( U64 sampleNum );
     virtual void CollectPackets();
+    virtual bool ToleranceCheck( AnalyzerChannelData* );
 
   protected: // vars
     BDMAnalyzerSettings mSettings;

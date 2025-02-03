@@ -11,6 +11,7 @@ BDMAnalyzerSettings::BDMAnalyzerSettings()
       mVFLS0Channel( UNDEFINED_CHANNEL ),
       mVFLS1Channel( UNDEFINED_CHANNEL ),
       mBitRate( 1000000 ),
+      mSampleTolerance( 2 ),
       mDSDIChannelInterface(),
       mDSDOChannelInterface(),
       mDSCKChannelInterface(),
@@ -18,7 +19,8 @@ BDMAnalyzerSettings::BDMAnalyzerSettings()
       mSRESETChannelInterface(),
       mVFLS0ChannelInterface(),
       mVFLS1ChannelInterface(),
-      mBitRateInterface()
+      mBitRateInterface(),
+      mSampleToleranceInterface()
 {
     mDSDIChannelInterface.SetTitleAndTooltip( "DSDI", "Standard BDM" );
     mDSDIChannelInterface.SetChannel( mDSDIChannel );
@@ -46,6 +48,11 @@ BDMAnalyzerSettings::BDMAnalyzerSettings()
     mBitRateInterface.SetMin( 1 );
     mBitRateInterface.SetInteger( mBitRate );
 
+    mSampleToleranceInterface.SetTitleAndTooltip( "N Samples", "Specify sample tolerance for clock timing requirements." );
+    mSampleToleranceInterface.SetMax( 100 );
+    mSampleToleranceInterface.SetMin( 0 );
+    mSampleToleranceInterface.SetInteger( mSampleTolerance );
+
     AddInterface( &mDSDIChannelInterface );
     AddInterface( &mDSDOChannelInterface );
     AddInterface( &mDSCKChannelInterface );
@@ -55,6 +62,7 @@ BDMAnalyzerSettings::BDMAnalyzerSettings()
     AddInterface( &mVFLS1ChannelInterface );
 
     AddInterface( &mBitRateInterface );
+    AddInterface( &mSampleToleranceInterface );
 
     AddExportOption( 0, "Export as text/csv file" );
     AddExportExtension( 0, "text", "txt" );
@@ -84,6 +92,7 @@ bool BDMAnalyzerSettings::SetSettingsFromInterfaces()
     mVFLS0Channel = mVFLS0ChannelInterface.GetChannel();
     mVFLS1Channel = mVFLS1ChannelInterface.GetChannel();
     mBitRate = mBitRateInterface.GetInteger();
+    mSampleTolerance = mSampleToleranceInterface.GetInteger();
 
     ClearChannels();
     AddChannel( mDSDIChannel, "BDM", true );
@@ -104,6 +113,7 @@ void BDMAnalyzerSettings::UpdateInterfacesFromSettings()
     mDSDIChannelInterface.SetChannel( mDSDIChannel );
     mDSDOChannelInterface.SetChannel( mDSDOChannel );
     mBitRateInterface.SetInteger( mBitRate );
+    mSampleToleranceInterface.SetInteger( mSampleTolerance );
 }
 
 void BDMAnalyzerSettings::LoadSettings( const char* settings )
@@ -113,6 +123,7 @@ void BDMAnalyzerSettings::LoadSettings( const char* settings )
 
     // text_archive >> mInputChannel;
     text_archive >> mBitRate;
+    text_archive >> mSampleTolerance;
 
     ClearChannels();
     AddChannel( mDSDIChannel, "BDM", true );
@@ -129,6 +140,7 @@ const char* BDMAnalyzerSettings::SaveSettings()
     text_archive << mDSDIChannel;
     text_archive << mDSDOChannel;
     text_archive << mBitRate;
+    text_archive << mSampleTolerance;
 
     return SetReturnString( text_archive.GetString() );
 }
