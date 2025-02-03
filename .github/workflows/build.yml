@@ -3,11 +3,12 @@ name: Build
 on:
   push:
     branches: 
-      - '*'
+      - '**'
     tags:
-      - '*'
+      - '**'
   pull_request:
-    branches: [main]
+    branches:
+      - '**'
 
 jobs:
   windows:
