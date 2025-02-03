@@ -43,7 +43,7 @@ jobs:
         name: macos_arm64
         path: ${{github.workspace}}/build/arm64/Analyzers/*.so
   linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Build
