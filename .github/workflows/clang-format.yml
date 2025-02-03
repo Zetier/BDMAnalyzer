@@ -1,0 +1,30 @@
+name: Format C++ Code
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+
+      - name: Run clang-format
+        run: |
+          find . -name '*.cpp' -o -name '*.h' | xargs clang-format -i
+
+      - name: Commit changes (if any)
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git diff --quiet || (git add . && git commit -m "Auto-format C++ code" && git push)
+
