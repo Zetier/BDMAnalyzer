@@ -1,4 +1,4 @@
-#include "BDMAnalyzer.h"
+#nclude "BDMAnalyzer.h"
 #include "BDMAnalyzerSettings.h"
 #include <AnalyzerChannelData.h>
 
@@ -27,7 +27,7 @@ void BDMAnalyzer::SetupResults()
 
 void BDMAnalyzer::SyncChannels(U64 sampleNum)
 {
-	mDSDI->AdvanceToAbsPosition(sampleNum);  
+		mDSDI->AdvanceToAbsPosition(sampleNum);  
 	mDSDO->AdvanceToAbsPosition(sampleNum);  
 	mDSCK->AdvanceToAbsPosition(sampleNum);  
 	mHRESET->AdvanceToAbsPosition(sampleNum);  
