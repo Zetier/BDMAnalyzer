@@ -31,7 +31,7 @@ void BDMAnalyzer::SyncChannels(U64 sampleNum)
 	mDSDO->AdvanceToAbsPosition(sampleNum);  
 	mDSCK->AdvanceToAbsPosition(sampleNum);  
 	mHRESET->AdvanceToAbsPosition(sampleNum);  
-	mSRESET->AdvanceToAbsPosition(sampleNum);
+		mSRESET->AdvanceToAbsPosition(sampleNum);
 	mVLFS0 ->AdvanceToAbsPosition(sampleNum);
 	mVLFS1 ->AdvanceToAbsPosition(sampleNum);
 }
