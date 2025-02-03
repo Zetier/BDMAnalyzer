@@ -1,4 +1,4 @@
-#nclude "BDMAnalyzer.h"
+#include "BDMAnalyzer.h"
 #include "BDMAnalyzerSettings.h"
 #include <AnalyzerChannelData.h>
 
